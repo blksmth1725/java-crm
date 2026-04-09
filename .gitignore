@@ -9,3 +9,4 @@ target/
 .env.local
 src/main/resources/application.properties
 .cursor/
+AGENTS.md
