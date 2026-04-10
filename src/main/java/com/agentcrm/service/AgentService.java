@@ -8,6 +8,7 @@ import com.agentcrm.repository.AgentRepository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,9 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class AgentService {
 
     private final AgentRepository agentRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public AgentService(AgentRepository agentRepository) {
+    public AgentService(AgentRepository agentRepository, PasswordEncoder passwordEncoder) {
         this.agentRepository = agentRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional(readOnly = true)
@@ -41,6 +44,7 @@ public class AgentService {
         }
         Agent agent = new Agent();
         agent.setEmail(request.email().trim().toLowerCase());
+        agent.setPasswordHash(passwordEncoder.encode(request.password()));
         agent.setFirstName(request.firstName().trim());
         agent.setLastName(request.lastName().trim());
         agent.setRegion(request.region().trim());
