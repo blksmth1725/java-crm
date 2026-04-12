@@ -13,3 +13,6 @@ spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 
 app.jwt.secret=
 app.jwt.expiration=86400000
+
+slack.webhook.url=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+spring.task.scheduling.pool.size=5

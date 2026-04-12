@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ClientRepository extends JpaRepository<Client, UUID> {
 
+    long countByAgent_Id(UUID agentId);
+
     List<Client> findByAgent_Id(UUID agentId);
 
     boolean existsByEmailIgnoreCase(String email);
