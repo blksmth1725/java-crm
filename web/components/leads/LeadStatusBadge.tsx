@@ -9,7 +9,8 @@ const statusConfig: Record<LeadStatus, { label: string; className: string }> = {
   },
   CONTACTED: {
     label: LEAD_STATUS_LABELS.CONTACTED,
-    className: "border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200",
+    className:
+      "border-primary/35 bg-primary/10 text-primary dark:border-primary/45 dark:bg-primary/15 dark:text-primary",
   },
   QUALIFIED: {
     label: LEAD_STATUS_LABELS.QUALIFIED,

@@ -1,6 +1,8 @@
 package com.agentcrm.config;
 
 import com.agentcrm.security.JwtFilter;
+import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -62,6 +64,8 @@ public class SecurityConfig {
                                         .permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/agents")
                                         .permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/actuator/health")
+                                        .permitAll()
                                         .anyRequest()
                                         .authenticated())
                 .authenticationProvider(authenticationProvider)
@@ -70,9 +74,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins:http://localhost:*}") String allowedOrigins) {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOriginPattern("http://localhost:*");
+        Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .forEach(
+                        origin -> {
+                            if (origin.contains("*")) {
+                                config.addAllowedOriginPattern(origin);
+                            } else {
+                                config.addAllowedOrigin(origin);
+                            }
+                        });
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(false);

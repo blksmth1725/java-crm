@@ -125,8 +125,8 @@ export function LeadDetailDrawer({
         }
       }}
     >
-      <SheetContent className="flex w-full max-w-full flex-col gap-0 overflow-y-auto sm:max-w-md">
-        <SheetHeader className="text-left">
+      <SheetContent className="flex w-full max-w-full flex-col gap-0 overflow-y-auto px-4 pb-4 sm:max-w-md">
+        <SheetHeader className="shrink-0 p-0 pt-4 text-left">
           <SheetTitle>Lead</SheetTitle>
           <SheetDescription>
             {lead ? `${lead.firstName} ${lead.lastName}` : "Loading…"}

@@ -1,29 +1,24 @@
 "use client"
 
-import { useMemo } from "react"
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts"
+import { useMemo, useState } from "react"
+import { PipelineStageCards } from "@/components/dashboard/PipelineStageCards"
+import { TaskEditDrawer } from "@/components/tasks/TaskEditDrawer"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { chartRowsFromStats, parseLeadsByStatus } from "@/lib/stats-chart"
 import { useJwtAgent } from "@/hooks/use-agent-jwt"
 import { useMyStats } from "@/hooks/useStats"
 import { useTasksByAgent } from "@/hooks/useTasks"
+import type { Task } from "@/lib/types"
 
 export default function DashboardPage() {
   const jwt = useJwtAgent()
   const agentId = jwt?.agentId ?? null
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null)
   const { data: stats, isLoading: statsLoading, error: statsError } = useMyStats()
   const { data: tasks, isLoading: tasksLoading } = useTasksByAgent(agentId)
 
-  const chartData = useMemo(() => chartRowsFromStats(stats), [stats])
+  const pipelineRows = useMemo(() => chartRowsFromStats(stats), [stats])
 
   const closedWon = stats ? parseLeadsByStatus(stats.leadsByStatus)["CLOSED_WON"] ?? 0 : 0
 
@@ -40,7 +35,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {statsLoading ? (
           <>
@@ -108,44 +103,13 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <Card>
-        <CardHeader>
+      <Card className="overflow-hidden border-border">
+        <CardHeader className="border-b border-border bg-card">
           <CardTitle className="text-base">Pipeline by status</CardTitle>
           <CardDescription>Lead volume per stage</CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px] w-full min-w-0">
-          {statsLoading ? (
-            <Skeleton className="h-full w-full" />
-          ) : chartData.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No lead data yet.</p>
-          ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 28 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis
-                  dataKey="label"
-                  interval={0}
-                  angle={0}
-                  textAnchor="middle"
-                  tick={{ fontSize: 9, fontFamily: "var(--font-montserrat), ui-sans-serif, sans-serif" }}
-                  tickMargin={6}
-                  height={32}
-                />
-                <YAxis
-                  allowDecimals={false}
-                  tick={{ fontSize: 9, fontFamily: "var(--font-montserrat), ui-sans-serif, sans-serif" }}
-                  width={28}
-                />
-                <Tooltip
-                  contentStyle={{
-                    fontSize: 11,
-                    fontFamily: "var(--font-montserrat), ui-sans-serif, sans-serif",
-                  }}
-                />
-                <Bar dataKey="count" fill="var(--primary)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
+        <CardContent className="px-3 py-4 md:px-4">
+          <PipelineStageCards rows={pipelineRows} loading={statsLoading} />
         </CardContent>
       </Card>
 
@@ -160,18 +124,22 @@ export default function DashboardPage() {
             <p className="text-sm text-muted-foreground">No open tasks.</p>
           )}
           {recentTasks.map((t) => (
-            <div
+            <button
               key={t.id}
-              className="flex flex-col gap-0.5 rounded-md border border-border px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between"
+              type="button"
+              onClick={() => setTaskToEdit(t)}
+              className="flex w-full min-w-0 cursor-pointer flex-col gap-0.5 rounded-md border border-border bg-card px-3 py-2 text-left text-sm transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
             >
-              <span className="font-medium">{t.title}</span>
-              <span className="text-xs text-muted-foreground">
+              <span className="min-w-0 truncate font-medium">{t.title}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">
                 {t.dueDate} · {t.status}
               </span>
-            </div>
+            </button>
           ))}
         </CardContent>
       </Card>
+
+      <TaskEditDrawer task={taskToEdit} onClose={() => setTaskToEdit(null)} />
     </div>
   )
 }

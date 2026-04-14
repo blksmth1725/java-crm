@@ -16,19 +16,21 @@ export default function LeadsPage() {
   const [createOpen, setCreateOpen] = useState(false)
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">Manage pipeline and conversions.</p>
         <Button type="button" onClick={() => setCreateOpen(true)} disabled={!agentId}>
           New lead
         </Button>
       </div>
-      <LeadTable
-        leads={leads}
-        isLoading={isLoading}
-        error={error}
-        onRowClick={(id) => setSelectedLeadId(id)}
-      />
+      <div className="flex min-h-0 flex-1 flex-col">
+        <LeadTable
+          leads={leads}
+          isLoading={isLoading}
+          error={error}
+          onRowClick={(id) => setSelectedLeadId(id)}
+        />
+      </div>
       <LeadDetailDrawer leadId={selectedLeadId} onClose={() => setSelectedLeadId(null)} />
       {agentId && (
         <CreateLeadForm open={createOpen} onOpenChange={setCreateOpen} agentId={agentId} />

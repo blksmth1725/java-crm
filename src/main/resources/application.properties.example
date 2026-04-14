@@ -14,5 +14,10 @@ spring.jpa.properties.hibernate.jdbc.time_zone=UTC
 app.jwt.secret=
 app.jwt.expiration=86400000
 
+app.cors.allowed-origins=http://localhost:*,https://YOUR_CLOUDFRONT_DOMAIN.cloudfront.net
+
+management.endpoints.web.exposure.include=health
+management.endpoint.health.show-details=never
+
 slack.webhook.url=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 spring.task.scheduling.pool.size=5

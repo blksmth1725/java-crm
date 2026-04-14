@@ -73,7 +73,9 @@ public class LeadService {
         lead.setRegion(trimToNull(request.region()));
         lead.setStatus(request.status() != null ? request.status() : LeadStatus.NEW);
         lead.setNotes(request.notes());
-        return LeadResponse.fromEntity(leadRepository.save(lead));
+        Lead saved = leadRepository.save(lead);
+        ensureClientWhenClosedWon(saved);
+        return LeadResponse.fromEntity(saved);
     }
 
     @Transactional
@@ -92,6 +94,7 @@ public class LeadService {
         lead.setRegion(trimToNull(request.region()));
         lead.setStatus(request.status());
         lead.setNotes(request.notes());
+        ensureClientWhenClosedWon(lead);
         return LeadResponse.fromEntity(lead);
     }
 
@@ -108,11 +111,33 @@ public class LeadService {
         Lead lead = leadRepository
                 .findById(leadId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lead not found"));
-        if (lead.getStatus() == LeadStatus.CLOSED_WON) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lead is already closed won");
-        }
         if (clientRepository.findByLead_Id(leadId).isPresent()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Lead already converted to a client");
+        }
+        if (lead.getStatus() != LeadStatus.CLOSED_WON) {
+            lead.setStatus(LeadStatus.CLOSED_WON);
+        }
+        Client client = createClientForClosedWonLead(lead);
+        leadRepository.save(lead);
+        return ClientResponse.fromEntity(client);
+    }
+
+    private void ensureClientWhenClosedWon(Lead lead) {
+        if (lead.getStatus() != LeadStatus.CLOSED_WON) {
+            return;
+        }
+        if (clientRepository.findByLead_Id(lead.getId()).isPresent()) {
+            return;
+        }
+        createClientForClosedWonLead(lead);
+    }
+
+    private Client createClientForClosedWonLead(Lead lead) {
+        if (lead.getStatus() != LeadStatus.CLOSED_WON) {
+            throw new IllegalStateException("Client can only be created for a closed-won lead");
+        }
+        if (clientRepository.existsByEmailIgnoreCase(lead.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use for a client");
         }
         Client client = new Client();
         client.setAgent(lead.getAgent());
@@ -123,13 +148,7 @@ public class LeadService {
         client.setPhone(lead.getPhone());
         client.setRegion(lead.getRegion());
         client.setNotes(lead.getNotes());
-        if (clientRepository.existsByEmailIgnoreCase(lead.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already in use for a client");
-        }
-        lead.setStatus(LeadStatus.CLOSED_WON);
-        clientRepository.save(client);
-        leadRepository.save(lead);
-        return ClientResponse.fromEntity(client);
+        return clientRepository.save(client);
     }
 
     private static String trimToNull(String s) {

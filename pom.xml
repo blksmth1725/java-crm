@@ -18,7 +18,7 @@
     <description>Agent CRM API</description>
 
     <properties>
-        <java.version>26</java.version>
+        <java.version>21</java.version>
         <jjwt.version>0.12.6</jjwt.version>
         <lombok.version>1.18.38</lombok.version>
     </properties>
@@ -43,6 +43,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -125,16 +129,16 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>enforce-java-26</id>
+                        <id>enforce-java-21</id>
                         <goals>
                             <goal>enforce</goal>
                         </goals>
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <version>[26,)</version>
+                                    <version>[21,)</version>
                                     <message>
-                                        This project requires JDK 26 for Maven. macOS: export JAVA_HOME=$(/usr/libexec/java_home -v 26) then verify with mvn -version.
+                                        This project requires JDK 21+ for Maven. macOS: export JAVA_HOME=$(/usr/libexec/java_home -v 21) then verify with mvn -version.
                                     </message>
                                 </requireJavaVersion>
                             </rules>

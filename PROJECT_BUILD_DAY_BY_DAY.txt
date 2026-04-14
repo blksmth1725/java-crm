@@ -1,0 +1,4 @@
+The day-by-day build narrative and architecture notes now live in Markdown so acronyms can link to the legend (Cmd/Ctrl+click in Cursor / VS Code).
+
+Open: PROJECT_BUILD_DAY_BY_DAY.md
+Legend: ACRONYM_LEGEND.md
