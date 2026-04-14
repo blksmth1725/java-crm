@@ -1,10 +1,15 @@
 import axios from "axios"
 import { getToken } from "@/lib/auth-token"
 
-const baseURL =
-  typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080")
-    : process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080"
+function resolveApiBaseUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_API_URL?.trim()
+  if (!raw) {
+    return "http://localhost:8080"
+  }
+  return raw.replace(/\/$/, "")
+}
+
+const baseURL = resolveApiBaseUrl()
 
 export const api = axios.create({
   baseURL,

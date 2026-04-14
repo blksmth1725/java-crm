@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "<account-id>.dkr.ecr.us-east-1.amazonaws.com/agent-crm-api:latest",
+    "Name": "180331802930.dkr.ecr.us-east-1.amazonaws.com/agent-crm-api:cors-v1",
     "Update": "true"
   },
   "Ports": [
