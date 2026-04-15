@@ -15,7 +15,7 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(
             @Value(
-                            "${app.cors.allowed-origins:http://localhost:3000,http://agent-crm-frontend.s3-website.us-east-2.amazonaws.com}")
+                            "${app.cors.allowed-origins:http://localhost:3000,http://agent-crm-frontend.s3-website.us-east-2.amazonaws.com,http://agent-crm-api.us-east-2.elasticbeanstalk.com}")
                     String allowedOriginsCsv) {
         List<String> origins =
                 Arrays.stream(allowedOriginsCsv.split(","))
